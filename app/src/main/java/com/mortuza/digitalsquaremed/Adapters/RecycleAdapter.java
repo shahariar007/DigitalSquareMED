@@ -33,7 +33,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        Log.d(TAG, "onCreateViewHolder: "+i);
+        Log.d(TAG, "onCreateViewHolder: " + i);
         if (i == 0)
             return new ViewHolder(LayoutInflater.from(mContext).inflate(R.layout.root_view_layout, viewGroup, false));
         else
@@ -47,21 +47,20 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             ViewHolder viewHolder1 = (ViewHolder) viewHolder;
             viewHolder1.medicineName.setText(medicineLists.get(i).getBrandName());
             viewHolder1.manufacturer.setText(medicineLists.get(i).getManufacturer());
-        }else if(viewHolder.getItemViewType() == 1)
-        {
-            ViewHolder2 viewHolder2= (ViewHolder2) viewHolder;
+        } else if (viewHolder.getItemViewType() == 1) {
+            ViewHolder2 viewHolder2 = (ViewHolder2) viewHolder;
         }
     }
 
 
     @Override
     public int getItemViewType(int position) {
-        Log.d(TAG, "getItemViewType: "+position + " size= "+medicineLists.size());
-        if(medicineLists.size()>0) {
-            if (medicineLists.size() == position+1) {
+        Log.d(TAG, "getItemViewType: " + position + " size= " + medicineLists.size());
+       // if (medicineLists.size() > 0) {
+            if (medicineLists.get(position) == null) {
                 return 1;
             }
-        }
+      //  }
         return 0;
     }
 
@@ -84,7 +83,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     class ViewHolder2 extends RecyclerView.ViewHolder {
         ProgressBar progressBar;
 
-         ViewHolder2(@NonNull View itemView) {
+        ViewHolder2(@NonNull View itemView) {
             super(itemView);
             progressBar = itemView.findViewById(R.id.progressBar);
         }

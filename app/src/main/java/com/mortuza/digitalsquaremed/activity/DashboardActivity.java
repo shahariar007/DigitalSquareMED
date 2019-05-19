@@ -43,18 +43,20 @@ public class DashboardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         recyclerView = findViewById(R.id.menuRecycler);
         apiServices = APIClient.getInstance().create(APIServices.class);
-        linearLayout=findViewById(R.id.mainLayout);
+        linearLayout = findViewById(R.id.mainLayout);
         setRecyclerView();
+        // addProgressBar();
         getData(page);
     }
 
     public void setRecyclerView() {
         medicineLists = new ArrayList<>();
+        medicineLists.add(null);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
         recycleAdapter = new RecycleAdapter(this);
         recyclerView.setAdapter(recycleAdapter);
-
+        recycleAdapter.setMedicineLists(medicineLists);
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -68,6 +70,7 @@ public class DashboardActivity extends AppCompatActivity {
 
                     if (!allReadyBool) {
                         Log.d(TAG, "onScrollStateChanged: totalItemCount > 0 && endHasBeenReached");
+                        addProgressBar();
                         getData(page);
                     }
                 }
@@ -84,18 +87,42 @@ public class DashboardActivity extends AppCompatActivity {
         });
     }
 
+    public void addProgressBar() {
+        try {
+            medicineLists.add(null);
+            recycleAdapter.notifyItemInserted(medicineLists.size() - 1);
+        } catch (Exception w) {
+            w.getStackTrace();
+        }
+    }
+
+    public void removeProgressBar() {
+        try {
+            medicineLists.remove(medicineLists.size() - 1);
+            recycleAdapter.notifyItemRemoved(medicineLists.size());
+        } catch (Exception w) {
+            w.getStackTrace();
+        }
+
+    }
+
     public void getData(int pages) {
         allReadyBool = true;
         Call<Medicine> response = apiServices.getDataServer(pages);
         response.enqueue(new Callback<Medicine>() {
             @Override
             public void onResponse(Call<Medicine> call, Response<Medicine> response) {
-                if (response != null && response.isSuccessful() && response.body().getCount() != 0) {
+                if (response.body() != null && response.isSuccessful() && response.body().getCount() != 0) {
+                    removeProgressBar();
                     medicineLists.addAll(response.body().getMedicineList());
                     recycleAdapter.setMedicineLists(medicineLists);
                     recycleAdapter.notifyDataSetChanged();
                     page += 1;
                     allReadyBool = false;
+
+                } else {
+                    Toast.makeText(DashboardActivity.this, "NO MORE DATA FOUND!!", Toast.LENGTH_SHORT).show();
+                    removeProgressBar();
                 }
 
 
@@ -106,6 +133,8 @@ public class DashboardActivity extends AppCompatActivity {
                 Toast.makeText(DashboardActivity.this, "" + t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "onFailure: " + t.getMessage());
                 allReadyBool = false;
+                removeProgressBar();
+                Toast.makeText(DashboardActivity.this, "ERROR !!!PLEASE CHECK YOUR INTERNET", Toast.LENGTH_SHORT).show();
             }
         });
     }
