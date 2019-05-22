@@ -14,7 +14,7 @@ public class BroadcastManager extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Toast.makeText(context, "Alarm IS SHOWS", Toast.LENGTH_LONG).show();
-        Log.d(TAG, "onReceive: ");
+        Log.d(TAG, "onReceive: " + intent.getExtras().getBoolean("onetime"));
         context.startActivity(new Intent(context, AlarmActivity.class));
     }
 }

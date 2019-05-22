@@ -5,11 +5,14 @@ import android.app.Fragment;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -21,7 +24,7 @@ import com.mortuza.digitalsquaremed.fragments.MRDialogFragment;
 import java.util.Calendar;
 
 public class SplashActivity extends AppCompatActivity implements MRDialogFragment.DialogListener {
-    Button button;
+    Button button, cancel;
     final public static String ONE_TIME = "onetime";
 
     @Override
@@ -29,12 +32,19 @@ public class SplashActivity extends AppCompatActivity implements MRDialogFragmen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         button = findViewById(R.id.GO);
+        cancel = findViewById(R.id.cancel);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //startAlert();
                 DialogFragment numberpicker = new MRDialogFragment();
                 numberpicker.show(SplashActivity.this.getSupportFragmentManager(), "NoticeDialogFragment");
+            }
+        });
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cancel(SplashActivity.this);
             }
         });
 
@@ -48,7 +58,7 @@ public class SplashActivity extends AppCompatActivity implements MRDialogFragmen
         calSet.set(Calendar.MINUTE, minute);
         calSet.set(Calendar.SECOND, 0);
         calSet.set(Calendar.MILLISECOND, 0);
-
+        Log.d("SplashActivity", "startAlert: " + calSet.compareTo(calNow));
         if (calSet.compareTo(calNow) <= 0) {
             // Today Set time passed, count to tomorrow
             calSet.add(Calendar.DATE, 1);
@@ -57,17 +67,18 @@ public class SplashActivity extends AppCompatActivity implements MRDialogFragmen
         Intent intent = new Intent(this, BroadcastManager.class);
         intent.putExtra(ONE_TIME, Boolean.FALSE);
         PendingIntent pi = PendingIntent.getBroadcast(this, 0, intent, 0);
-        am.set(AlarmManager.RTC_WAKEUP,calSet.getTimeInMillis() , pi);
-        am.setRepeating(AlarmManager.RTC_WAKEUP,calSet.getTimeInMillis(),2*1000 , pi);
+        am.set(AlarmManager.RTC_WAKEUP, calSet.getTimeInMillis(), pi);
+        // am.setRepeating(AlarmManager.RTC_WAKEUP,calSet.getTimeInMillis(),2*1000 , pi);
         Toast.makeText(this, "Alarm set successfully", Toast.LENGTH_SHORT).show();
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putLong("long", calSet.getTimeInMillis()).apply();
     }
 
-    public void setOnetimeTimer(Context context) {
+    public void cancel(Context context) {
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, BroadcastManager.class);
         intent.putExtra(ONE_TIME, Boolean.TRUE);
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, 0);
-        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
+        am.cancel(pi);
     }
 
     @Override
