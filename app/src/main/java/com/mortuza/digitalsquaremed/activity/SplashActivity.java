@@ -1,15 +1,11 @@
 package com.mortuza.digitalsquaremed.activity;
 
 import android.app.AlarmManager;
-import android.app.Fragment;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,14 +13,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.mortuza.digitalsquaremed.DownloadService.DownloadServiceActivity;
 import com.mortuza.digitalsquaremed.broadcast.BroadcastManager;
 import com.mortuza.digitalsquaremed.R;
 import com.mortuza.digitalsquaremed.fragments.MRDialogFragment;
+import com.mortuza.digitalsquaremed.utill.NotificationHunt;
 
 import java.util.Calendar;
 
 public class SplashActivity extends AppCompatActivity implements MRDialogFragment.DialogListener {
-    Button button, cancel;
+    Button button, cancel, notificationAction, downloadNotification;
     final public static String ONE_TIME = "onetime";
 
     @Override
@@ -33,18 +31,34 @@ public class SplashActivity extends AppCompatActivity implements MRDialogFragmen
         setContentView(R.layout.activity_splash);
         button = findViewById(R.id.GO);
         cancel = findViewById(R.id.cancel);
+        notificationAction = findViewById(R.id.notificationAction);
+        downloadNotification = findViewById(R.id.downloadNotification);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //startAlert();
-                DialogFragment numberpicker = new MRDialogFragment();
-                numberpicker.show(SplashActivity.this.getSupportFragmentManager(), "NoticeDialogFragment");
+                DialogFragment numberPicker = new MRDialogFragment();
+                numberPicker.show(SplashActivity.this.getSupportFragmentManager(), "NoticeDialogFragment");
             }
         });
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 cancel(SplashActivity.this);
+            }
+        });
+
+        notificationAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NotificationHunt notificationHunt = new NotificationHunt(SplashActivity.this);
+                notificationHunt.show();
+            }
+        });
+        downloadNotification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(SplashActivity.this, DownloadServiceActivity.class));
             }
         });
 

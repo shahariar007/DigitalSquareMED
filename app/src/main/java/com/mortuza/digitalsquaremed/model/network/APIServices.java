@@ -31,4 +31,8 @@ public interface APIServices {
     @POST("getMedicineList")
     @FormUrlEncoded
     Call<Medicine> getDataServer(@Field("page") int page);
+
+    @GET()
+    @Streaming
+    Call<ResponseBody> downloadImage(@Url String fileUrl);
 }

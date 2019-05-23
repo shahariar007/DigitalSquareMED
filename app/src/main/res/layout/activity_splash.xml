@@ -19,4 +19,16 @@
         android:layout_height="wrap_content"
         android:text="cancel" />
 
+    <Button
+        android:id="@+id/notificationAction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="NotificationAction" />
+
+    <Button
+        android:id="@+id/downloadNotification"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Download Notification" />
+
 </LinearLayout>
